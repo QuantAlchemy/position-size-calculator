@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Position Size Calculator with Liquidation Analysis</title>
+    <link rel="icon" type="image/svg+xml" href="iconWhite.svg" />
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta
+      property="og:title"
+      content="Position Size Calculator with Liquidation Analysis"
+    />
+    <meta
+      property="og:description"
+      content="Calculate your optimal position size and analyze liquidation risks for your crypto trades."
+    />
+    <meta property="og:image" content="social.png" />
+    <meta property="og:url" content="" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Position Size Calculator with Liquidation Analysis"
+    />
+    <meta
+      name="twitter:description"
+      content="Calculate your optimal position size and analyze liquidation risks for your crypto trades."
+    />
+    <meta name="twitter:image" content="social.png" />
+
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #0a0a0a;
+        color: #c9c9c9;
+        min-height: 100vh;
+      }
+      .calculator {
+        background: #1a1a1a;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        border: 1px solid #2a2a2a;
+      }
+      h1 {
+        text-align: center;
+        color: #8a6aff;
+        margin-bottom: 30px;
+        font-size: 28px;
+        font-weight: 600;
+      }
+      .input-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #b0b0b0;
+        font-size: 14px;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #3a3a3a;
+        border-radius: 4px;
+        font-size: 16px;
+        box-sizing: border-box;
+        background: #0f0f0f;
+        color: #e0e0e0;
+        transition: border-color 0.2s ease;
+      }
+      input:focus,
+      select:focus {
+        border-color: #8a6aff;
+        outline: none;
+        background: #151515;
+      }
+      input::placeholder {
+        color: #666666;
+      }
+      .risk-toggle {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .risk-toggle button {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #3a3a3a;
+        background: #0f0f0f;
+        color: #b0b0b0;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
+      }
+      .risk-toggle button:hover {
+        border-color: #8a6aff;
+        background: #151515;
+      }
+      .risk-toggle button.active {
+        background: #8a6aff;
+        color: #ffffff;
+        border-color: #8a6aff;
+      }
+      .calculate-btn {
+        width: 100%;
+        padding: 16px;
+        background: #8a6aff;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 25px;
+        transition: background-color 0.2s ease;
+      }
+      .calculate-btn:hover {
+        background: #7a5aef;
+      }
+      .results {
+        margin-top: 30px;
+        padding: 25px;
+        background: #151515;
+        border-radius: 6px;
+        border-left: 3px solid #8a6aff;
+      }
+      .result-item {
+        margin-bottom: 15px;
+        padding: 15px;
+        background: #1f1f1f;
+        border-radius: 4px;
+        border: 1px solid #2a2a2a;
+      }
+      .result-label {
+        font-weight: 500;
+        color: #b0b0b0;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .result-value {
+        font-size: 20px;
+        color: #ffffff;
+        font-weight: 600;
+      }
+      .highlight {
+        background: #1a2a1a;
+        border: 1px solid #4caf50;
+      }
+      .highlight .result-value {
+        color: #4caf50;
+      }
+      .warning {
+        background: #2a2a1a;
+        border: 1px solid #ffa726;
+        color: #ffa726;
+      }
+      .danger {
+        background: #2a1a1a;
+        border: 1px solid #f44336;
+        color: #f44336;
+      }
+      .error {
+        color: #f44336;
+        background: #2a1a1a;
+        padding: 15px;
+        border-radius: 4px;
+        border: 1px solid #f44336;
+        margin-top: 15px;
+      }
+      .margin-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+      }
+      .margin-item {
+        background: #1f1f1f;
+        padding: 15px;
+        border-radius: 4px;
+        text-align: center;
+        border: 1px solid #2a2a2a;
+      }
+      .margin-item div[style*='color: #4a9eff'] {
+        color: #8a6aff !important;
+      }
+      .liquidation-section {
+        margin-top: 20px;
+        padding: 20px;
+        background: #2a2a1a;
+        border-radius: 6px;
+        border: 1px solid #ffa726;
+      }
+      .liquidation-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 15px;
+      }
+      .liquidation-item {
+        background: #1f1f1f;
+        padding: 15px;
+        border-radius: 4px;
+        text-align: center;
+        border: 1px solid #2a2a2a;
+      }
+      .buffer-analysis {
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 6px;
+      }
+      .buffer-safe {
+        background: #1a2a1a;
+        border: 1px solid #4caf50;
+        color: #4caf50;
+      }
+      .buffer-moderate {
+        background: #2a2a1a;
+        border: 1px solid #ffa726;
+        color: #ffa726;
+      }
+      .buffer-risky {
+        background: #2a1a1a;
+        border: 1px solid #f44336;
+        color: #f44336;
+      }
+      .small-text {
+        font-size: 12px;
+        color: #777777;
+        margin-top: 5px;
+        font-style: italic;
+      }
+      .info-box {
+        background: #1a1a2a;
+        border: 1px solid #8a6aff;
+        padding: 20px;
+        border-radius: 6px;
+        margin-top: 20px;
+      }
+      .info-title {
+        font-weight: 600;
+        color: #8a6aff;
+        margin-bottom: 12px;
+        font-size: 16px;
+      }
+      .info-box div:not(.info-title) {
+        color: #c9c9c9;
+        line-height: 1.6;
+      }
+
+      /* Scrollbar styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0a0a0a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #8a6aff;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #7a5aef;
+      }
+
+      /* Animation for results */
+      .results {
+        animation: slideIn 0.3s ease-out;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Status colors */
+      .liquidation-section .result-label {
+        color: #ffa726;
+      }
+
+      .buffer-safe .result-label {
+        color: #4caf50;
+      }
+
+      .buffer-moderate .result-label {
+        color: #ffa726;
+      }
+
+      .buffer-risky .result-label {
+        color: #f44336;
+      }
+
+      /* Responsive design */
+      @media (max-width: 600px) {
+        .margin-info,
+        .liquidation-grid {
+          grid-template-columns: 1fr;
+        }
+        body {
+          padding: 10px;
+        }
+        .calculator {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="calculator">
+      <h1>Position Size Calculator with Liquidation Analysis</h1>
+
+      <div class="input-group">
+        <label for="accountSize">Total Account Size ($)</label>
+        <input type="number" id="accountSize" placeholder="10000" step="0.01" />
+      </div>
+
+      <div class="input-group">
+        <label for="exchangeBalance">Amount on Exchange ($)</label>
+        <input
+          type="number"
+          id="exchangeBalance"
+          placeholder="2500"
+          step="0.01"
+        />
+        <div class="small-text">
+          This is your margin buffer - the actual funds available on the
+          exchange
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Risk Type</label>
+        <div class="risk-toggle">
+          <button
+            type="button"
+            id="percentBtn"
+            class="active"
+            onclick="toggleRiskType('percent')"
+          >
+            Percentage (%)
+          </button>
+          <button
+            type="button"
+            id="dollarBtn"
+            onclick="toggleRiskType('dollar')"
+          >
+            Dollar Amount ($)
+          </button>
+        </div>
+        <input
+          type="number"
+          id="riskPercent"
+          placeholder="5"
+          step="0.01"
+          style="display: block"
+        />
+        <input
+          type="number"
+          id="riskDollar"
+          placeholder="500"
+          step="0.01"
+          style="display: none"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="entryPrice">Entry Price ($)</label>
+        <input type="number" id="entryPrice" placeholder="93534" step="0.01" />
+      </div>
+
+      <div class="input-group">
+        <label for="stopLoss">Stop Loss Price ($)</label>
+        <input type="number" id="stopLoss" placeholder="91226" step="0.01" />
+      </div>
+
+      <div class="input-group">
+        <label for="leverage">Leverage</label>
+        <input
+          type="number"
+          id="leverage"
+          placeholder="100"
+          step="1"
+          min="1"
+          value="100"
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="maintenanceMargin">Maintenance Margin (%)</label>
+        <input
+          type="number"
+          id="maintenanceMargin"
+          placeholder="0.5"
+          step="0.01"
+          value="0.5"
+        />
+        <div class="small-text">
+          Exchange maintenance margin requirement (typically 0.4% - 1%)
+        </div>
+      </div>
+
+      <button class="calculate-btn" onclick="calculatePosition()">
+        Calculate Position Size & Liquidation Risk
+      </button>
+
+      <div id="results" class="results" style="display: none">
+        <div class="result-item highlight">
+          <div class="result-label">Position Size</div>
+          <div class="result-value" id="positionSize"></div>
+        </div>
+
+        <div class="result-item">
+          <div class="result-label">R Multiple (Risk per Unit)</div>
+          <div class="result-value" id="rMultiple"></div>
+        </div>
+
+        <div class="result-item">
+          <div class="result-label">Total Risk Amount</div>
+          <div class="result-value" id="totalRisk"></div>
+        </div>
+
+        <div class="result-item">
+          <div class="result-label">Position Notional Value</div>
+          <div class="result-value" id="notionalValue"></div>
+        </div>
+
+        <div class="result-item">
+          <div class="result-label">Margin Requirements</div>
+          <div class="margin-info">
+            <div class="margin-item">
+              <div
+                style="font-weight: bold; margin-bottom: 5px; color: #4a9eff"
+              >
+                Initial Margin Required
+              </div>
+              <div
+                id="initialMargin"
+                style="color: #4a9eff; font-size: 16px; font-weight: 600"
+              ></div>
+            </div>
+            <div class="margin-item">
+              <div
+                style="font-weight: bold; margin-bottom: 5px; color: #ffa726"
+              >
+                Maintenance Margin Required
+              </div>
+              <div
+                id="maintenanceMarginAmount"
+                style="color: #ffa726; font-size: 16px; font-weight: 600"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="liquidation-section">
+          <div
+            class="result-label"
+            style="text-align: center; margin-bottom: 15px; font-size: 18px"
+          >
+            Liquidation Analysis
+          </div>
+          <div class="liquidation-grid">
+            <div class="liquidation-item">
+              <div
+                style="font-weight: bold; margin-bottom: 5px; color: #f44336"
+              >
+                Liquidation Price
+              </div>
+              <div
+                id="liquidationPrice"
+                style="font-size: 18px; color: #f44336; font-weight: 600"
+              ></div>
+              <div class="small-text">
+                Price at which position gets liquidated
+              </div>
+            </div>
+            <div class="liquidation-item">
+              <div
+                style="font-weight: bold; margin-bottom: 5px; color: #ffa726"
+              >
+                Distance to Liquidation
+              </div>
+              <div
+                id="liquidationDistance"
+                style="font-size: 18px; color: #ffa726; font-weight: 600"
+              ></div>
+              <div class="small-text">How far price can move against you</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="bufferAnalysis" class="buffer-analysis">
+          <div
+            class="result-label"
+            style="text-align: center; margin-bottom: 15px; font-size: 18px"
+          >
+            Margin Buffer Analysis
+          </div>
+          <div
+            id="bufferStatus"
+            style="font-weight: 600; font-size: 16px; margin-bottom: 15px"
+          ></div>
+          <div style="margin-top: 15px; line-height: 1.8">
+            <div>
+              <strong>Available Buffer:</strong>
+              <span id="availableBuffer" style="color: #4a9eff"></span>
+            </div>
+            <div>
+              <strong>Buffer vs Stop-Loss Risk:</strong>
+              <span id="bufferRatio" style="color: #4a9eff"></span>
+            </div>
+            <div>
+              <strong>Max Loss Before Liquidation:</strong>
+              <span id="maxLossBeforeLiquidation" style="color: #f44336"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-title">Risk Management Tips</div>
+          <div id="riskTips" style="line-height: 1.7"></div>
+        </div>
+      </div>
+
+      <div id="error" class="error" style="display: none"></div>
+    </div>
+
+    <script>
+      function toggleRiskType(type) {
+        const percentBtn = document.getElementById('percentBtn')
+        const dollarBtn = document.getElementById('dollarBtn')
+        const riskPercent = document.getElementById('riskPercent')
+        const riskDollar = document.getElementById('riskDollar')
+
+        if (type === 'percent') {
+          percentBtn.classList.add('active')
+          dollarBtn.classList.remove('active')
+          riskPercent.style.display = 'block'
+          riskDollar.style.display = 'none'
+        } else {
+          dollarBtn.classList.add('active')
+          percentBtn.classList.remove('active')
+          riskPercent.style.display = 'none'
+          riskDollar.style.display = 'block'
+        }
+      }
+
+      function calculatePosition() {
+        // Clear previous results and errors
+        document.getElementById('results').style.display = 'none'
+        document.getElementById('error').style.display = 'none'
+
+        try {
+          // Get input values
+          const accountSize = parseFloat(
+            document.getElementById('accountSize').value
+          )
+          const exchangeBalance = parseFloat(
+            document.getElementById('exchangeBalance').value
+          )
+          const entryPrice = parseFloat(
+            document.getElementById('entryPrice').value
+          )
+          const stopLoss = parseFloat(document.getElementById('stopLoss').value)
+          const leverage =
+            parseFloat(document.getElementById('leverage').value) || 1
+          const maintenanceMarginPercent =
+            parseFloat(document.getElementById('maintenanceMargin').value) ||
+            0.5
+
+          // Determine risk amount
+          let riskAmount
+          const isPercentRisk = document
+            .getElementById('percentBtn')
+            .classList.contains('active')
+
+          if (isPercentRisk) {
+            const riskPercent = parseFloat(
+              document.getElementById('riskPercent').value
+            )
+            if (!riskPercent || riskPercent <= 0) {
+              throw new Error('Please enter a valid risk percentage')
+            }
+            riskAmount = (accountSize * riskPercent) / 100
+          } else {
+            riskAmount = parseFloat(document.getElementById('riskDollar').value)
+            if (!riskAmount || riskAmount <= 0) {
+              throw new Error('Please enter a valid risk amount')
+            }
+          }
+
+          // Validate inputs
+          if (!accountSize || accountSize <= 0) {
+            throw new Error('Please enter a valid account size')
+          }
+          if (!exchangeBalance || exchangeBalance <= 0) {
+            throw new Error('Please enter a valid exchange balance')
+          }
+          if (exchangeBalance > accountSize) {
+            throw new Error(
+              'Exchange balance cannot be greater than total account size'
+            )
+          }
+          if (!entryPrice || entryPrice <= 0) {
+            throw new Error('Please enter a valid entry price')
+          }
+          if (!stopLoss || stopLoss <= 0) {
+            throw new Error('Please enter a valid stop loss price')
+          }
+          if (entryPrice === stopLoss) {
+            throw new Error('Entry price and stop loss cannot be the same')
+          }
+
+          // Determine if long or short position
+          const isLong = stopLoss < entryPrice
+
+          // Calculate R multiple (risk per unit)
+          const rMultiple = Math.abs(entryPrice - stopLoss)
+
+          // Calculate position size
+          const positionSize = riskAmount / rMultiple
+
+          // Calculate notional value
+          const notionalValue = positionSize * entryPrice
+
+          // Calculate margin requirements
+          const initialMargin = notionalValue / leverage
+          const maintenanceMarginAmount =
+            (notionalValue * maintenanceMarginPercent) / 100
+
+          // Calculate liquidation price
+          let liquidationPrice
+          if (isLong) {
+            // For long positions: liquidation when equity falls to maintenance margin
+            // Liquidation Price = Entry Price - (Exchange Balance - Maintenance Margin) / Position Size
+            liquidationPrice =
+              entryPrice -
+              (exchangeBalance - maintenanceMarginAmount) / positionSize
+          } else {
+            // For short positions: liquidation when equity falls to maintenance margin
+            // Liquidation Price = Entry Price + (Exchange Balance - Maintenance Margin) / Position Size
+            liquidationPrice =
+              entryPrice +
+              (exchangeBalance - maintenanceMarginAmount) / positionSize
+          }
+
+          // Calculate distance to liquidation
+          const liquidationDistance = Math.abs(entryPrice - liquidationPrice)
+          const liquidationDistancePercent =
+            (liquidationDistance / entryPrice) * 100
+
+          // Calculate buffer analysis
+          const availableBuffer = exchangeBalance - initialMargin
+          const bufferRatio = availableBuffer / riskAmount
+          const maxLossBeforeLiquidation =
+            exchangeBalance - maintenanceMarginAmount
+
+          // Determine buffer status
+          let bufferClass, bufferStatus, riskTips
+          if (bufferRatio >= 3) {
+            bufferClass = 'buffer-safe'
+            bufferStatus =
+              'SAFE: Excellent margin buffer. Very low liquidation risk.'
+            riskTips =
+              '• Your buffer is strong enough to handle significant slippage<br>• Consider this setup as low liquidation risk<br>• Monitor for extreme market volatility'
+          } else if (bufferRatio >= 1.5) {
+            bufferClass = 'buffer-moderate'
+            bufferStatus = 'MODERATE: Adequate buffer, but monitor closely.'
+            riskTips =
+              '• Your buffer provides reasonable protection<br>• Be aware of potential slippage in volatile markets<br>• Consider tighter stop-losses or smaller position size<br>• Monitor funding fees if holding overnight'
+          } else {
+            bufferClass = 'buffer-risky'
+            bufferStatus = 'RISKY: Low margin buffer. High liquidation risk!'
+            riskTips =
+              '• DANGER: Your buffer may not protect against slippage<br>• Consider reducing position size or increasing exchange balance<br>• Use lower leverage to increase your buffer<br>• This setup has significant liquidation risk'
+          }
+
+          // Check if position is even possible
+          if (initialMargin > exchangeBalance) {
+            throw new Error(
+              `Insufficient exchange balance. You need at least $${initialMargin.toFixed(
+                2
+              )} but only have $${exchangeBalance.toFixed(2)} on the exchange.`
+            )
+          }
+
+          // Display results
+          document.getElementById(
+            'positionSize'
+          ).textContent = `${positionSize.toFixed(6)} BTC`
+          document.getElementById(
+            'rMultiple'
+          ).textContent = `$${rMultiple.toFixed(2)}`
+          document.getElementById(
+            'totalRisk'
+          ).textContent = `$${riskAmount.toFixed(2)}`
+          document.getElementById(
+            'notionalValue'
+          ).textContent = `$${notionalValue.toFixed(2)}`
+          document.getElementById(
+            'initialMargin'
+          ).textContent = `$${initialMargin.toFixed(2)}`
+          document.getElementById(
+            'maintenanceMarginAmount'
+          ).textContent = `$${maintenanceMarginAmount.toFixed(2)}`
+
+          // Liquidation analysis
+          document.getElementById(
+            'liquidationPrice'
+          ).textContent = `$${liquidationPrice.toFixed(2)}`
+          document.getElementById(
+            'liquidationDistance'
+          ).textContent = `$${liquidationDistance.toFixed(
+            2
+          )} (${liquidationDistancePercent.toFixed(2)}%)`
+
+          // Buffer analysis
+          const bufferAnalysis = document.getElementById('bufferAnalysis')
+          bufferAnalysis.className = `buffer-analysis ${bufferClass}`
+          document.getElementById('bufferStatus').innerHTML = bufferStatus
+          document.getElementById(
+            'availableBuffer'
+          ).textContent = `$${availableBuffer.toFixed(2)}`
+          document.getElementById(
+            'bufferRatio'
+          ).textContent = `${bufferRatio.toFixed(2)}x (${
+            bufferRatio >= 1 ? 'Buffer > Risk' : 'Buffer < Risk'
+          })`
+          document.getElementById(
+            'maxLossBeforeLiquidation'
+          ).textContent = `$${maxLossBeforeLiquidation.toFixed(2)}`
+          document.getElementById('riskTips').innerHTML = riskTips
+
+          document.getElementById('results').style.display = 'block'
+        } catch (error) {
+          document.getElementById('error').textContent = error.message
+          document.getElementById('error').style.display = 'block'
+        }
+      }
+
+      // Allow Enter key to calculate
+      document.addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+          calculatePosition()
+        }
+      })
+    </script>
+  </body>
+</html>
