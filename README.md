@@ -12,7 +12,7 @@ A simple and intuitive web-based calculator for determining optimal position siz
 
 ## Live Demo
 
-The calculator is available at: [https://github.com/QuantAlchemy/position-size-calculator](https://github.com/QuantAlchemy/position-size-calculator)
+The calculator is available at: [https://quantalchemy.github.io/position-size-calculator/](https://quantalchemy.github.io/position-size-calculator/)
 
 ## How to Use
 
