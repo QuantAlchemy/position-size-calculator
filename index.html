@@ -13,7 +13,7 @@
     />
     <meta
       property="og:description"
-      content="Calculate your optimal position size and analyze liquidation risks for your crypto trades."
+      content="Calculate optimal position sizes and analyze liquidation risks for any trading asset. Perfect for crypto, forex, stocks, and more."
     />
     <meta property="og:image" content="social.png" />
     <meta property="og:url" content="" />
@@ -27,7 +27,7 @@
     />
     <meta
       name="twitter:description"
-      content="Calculate your optimal position size and analyze liquidation risks for your crypto trades."
+      content="Calculate optimal position sizes and analyze liquidation risks for any trading asset. Perfect for crypto, forex, stocks, and more."
     />
     <meta name="twitter:image" content="social.png" />
 
@@ -400,6 +400,20 @@
       </div>
 
       <div class="input-group">
+        <label for="assetSymbol">Asset Symbol</label>
+        <input
+          type="text"
+          id="assetSymbol"
+          placeholder="BTC"
+          value="BTC"
+          maxlength="10"
+        />
+        <div class="small-text">
+          The trading pair symbol (e.g., BTC, ETH, AAPL, EUR/USD)
+        </div>
+      </div>
+
+      <div class="input-group">
         <label for="maintenanceMargin">Maintenance Margin (%)</label>
         <input
           type="number"
@@ -701,7 +715,7 @@
           // Display results
           document.getElementById(
             'positionSize'
-          ).textContent = `${positionSize.toFixed(6)} BTC`
+          ).textContent = `${positionSize.toFixed(6)} units`
           document.getElementById(
             'rMultiple'
           ).textContent = `$${rMultiple.toFixed(2)}`
