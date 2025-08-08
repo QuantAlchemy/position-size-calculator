@@ -65,6 +65,57 @@
         color: #b0b0b0;
         font-size: 14px;
       }
+      /* Tooltip styles */
+      .label-with-tooltip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .info-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 12px;
+        font-weight: 700;
+        background: #0f0f0f;
+        color: #8a6aff;
+        border: 1px solid #3a3a3a;
+        cursor: default;
+        position: relative;
+        user-select: none;
+      }
+      .info-icon:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(138, 106, 255, 0.35);
+      }
+      .tooltip {
+        position: absolute;
+        left: 22px;
+        top: 50%;
+        transform: translateY(-50%) translateY(4px);
+        background: #1a1a2a;
+        color: #c9c9c9;
+        border: 1px solid #8a6aff;
+        padding: 10px 12px;
+        border-radius: 6px;
+        width: 280px;
+        max-width: min(80vw, 320px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+        z-index: 20;
+        line-height: 1.45;
+      }
+      .info-icon:hover .tooltip,
+      .info-icon:focus .tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-50%) translateY(0);
+      }
       input,
       select {
         width: 100%;
@@ -338,12 +389,36 @@
       <h1>Position Size Calculator with Liquidation Analysis</h1>
 
       <div class="input-group">
-        <label for="accountSize">Total Account Size ($)</label>
+        <label for="accountSize" class="label-with-tooltip">
+          Total Account Size ($)
+          <span
+            class="info-icon"
+            tabindex="0"
+            aria-label="Total account size info"
+            >i
+            <span class="tooltip"
+              >Your total trading capital across all accounts. Used to compute
+              the risk budget when Risk Type is set to Percentage.</span
+            >
+          </span>
+        </label>
         <input type="number" id="accountSize" placeholder="10000" step="0.01" />
       </div>
 
       <div class="input-group">
-        <label for="exchangeBalance">Amount on Exchange ($)</label>
+        <label for="exchangeBalance" class="label-with-tooltip">
+          Amount on Exchange ($)
+          <span
+            class="info-icon"
+            tabindex="0"
+            aria-label="Exchange balance info"
+            >i
+            <span class="tooltip"
+              >Funds currently available on the exchange/margin account. Used as
+              your margin buffer and for liquidation/margin calculations.</span
+            >
+          </span>
+        </label>
         <input
           type="number"
           id="exchangeBalance"
@@ -357,7 +432,17 @@
       </div>
 
       <div class="input-group">
-        <label>Risk Type</label>
+        <label class="label-with-tooltip">
+          Risk Type
+          <span class="info-icon" tabindex="0" aria-label="Risk type info"
+            >i
+            <span class="tooltip"
+              >Choose how to set your risk budget: Percentage uses a share of
+              your Total Account Size; Dollar lets you enter a fixed amount to
+              risk.</span
+            >
+          </span>
+        </label>
         <div class="risk-toggle">
           <button
             type="button"
@@ -392,17 +477,44 @@
       </div>
 
       <div class="input-group">
-        <label for="entryPrice">Entry Price ($)</label>
+        <label for="entryPrice" class="label-with-tooltip">
+          Entry Price ($)
+          <span class="info-icon" tabindex="0" aria-label="Entry price info"
+            >i
+            <span class="tooltip"
+              >The price where you plan to enter the trade. Used to compute
+              notional value and liquidation distance.</span
+            >
+          </span>
+        </label>
         <input type="number" id="entryPrice" placeholder="93534" step="0.01" />
       </div>
 
       <div class="input-group">
-        <label for="stopLoss">Stop Loss Price ($)</label>
+        <label for="stopLoss" class="label-with-tooltip">
+          Stop Loss Price ($)
+          <span class="info-icon" tabindex="0" aria-label="Stop loss info"
+            >i
+            <span class="tooltip"
+              >Your exit price to cap loss if the market moves against you.
+              Defines per-unit risk together with the entry price.</span
+            >
+          </span>
+        </label>
         <input type="number" id="stopLoss" placeholder="91226" step="0.01" />
       </div>
 
       <div class="input-group">
-        <label for="leverage">Leverage</label>
+        <label for="leverage" class="label-with-tooltip">
+          Leverage
+          <span class="info-icon" tabindex="0" aria-label="Leverage info"
+            >i
+            <span class="tooltip"
+              >Exposure multiplier relative to your collateral. Initial margin
+              is calculated as Notional ÷ Leverage.</span
+            >
+          </span>
+        </label>
         <input
           type="number"
           id="leverage"
@@ -414,7 +526,16 @@
       </div>
 
       <div class="input-group">
-        <label for="assetSymbol">Asset Symbol</label>
+        <label for="assetSymbol" class="label-with-tooltip">
+          Asset Symbol
+          <span class="info-icon" tabindex="0" aria-label="Asset symbol info"
+            >i
+            <span class="tooltip"
+              >Ticker or trading pair (e.g., BTC, ETH, AAPL, EUR/USD). Currently
+              used for display only and does not affect calculations.</span
+            >
+          </span>
+        </label>
         <input
           type="text"
           id="assetSymbol"
@@ -428,7 +549,19 @@
       </div>
 
       <div class="input-group">
-        <label for="maintenanceMargin">Maintenance Margin (%)</label>
+        <label for="maintenanceMargin" class="label-with-tooltip">
+          Maintenance Margin (%)
+          <span
+            class="info-icon"
+            tabindex="0"
+            aria-label="Maintenance margin info"
+            >i
+            <span class="tooltip"
+              >Exchange maintenance margin requirement (typical 0.4%–1%).
+              Affects liquidation threshold and buffer calculations.</span
+            >
+          </span>
+        </label>
         <input
           type="number"
           id="maintenanceMargin"
