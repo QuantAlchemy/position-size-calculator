@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./iconWhite.svg" alt="Position Size Calculator Logo" width="80" height="80">
+</p>
+
 # Position Size Calculator
 
 A simple and intuitive web-based calculator for determining optimal position sizes in trading. This tool helps traders calculate their position size based on account balance, risk percentage, and stop loss distance.
